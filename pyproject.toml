@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "annas-archive-api"
+version = "0.1.0"
+description = "An unofficial annas-archive.org API"
+authors = []
+license = "MIT"
+readme = "README.md"
+packages = [{include = "annas_archive_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sanic = "^23.3.0"
+lxml = "^4.9.2"
+aiohttp = "^3.8.4"
+beautifulsoup4 = "^4.12.2"
+aiodns = "^3.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

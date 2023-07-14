@@ -1,9 +1,10 @@
 FROM python:3.11.3-slim-bullseye
-RUN adduser --disabled-password --gecos "" anna-api && \
-    chown -R anna-api /home/anna-api
-USER anna-api
-WORKDIR /home/anna-api
-COPY requirements.txt requirements.txt
-RUN pip install --no-warn-script-location -r requirements.txt
+RUN adduser --disabled-password --gecos "" anna && \
+    chown -R anna /home/anna && \
+    pip install poetry
+USER anna
+WORKDIR /home/anna
+COPY pyproject.toml .
+RUN poetry install
 COPY . .
-CMD ["python", "run.py"]
+CMD ["poetry", "run", "python", "run.py"]
