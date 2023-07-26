@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(slots=True)
 class FileInfo:
     language: str | None
     extension: str
@@ -21,9 +21,9 @@ def extract_file_info(raw: str) -> FileInfo:
     #  Portuguese [pt], epub, 1.5MB
     #  mobi, 4.1MB
 
-    info_list = raw.split(', ')
+    info_list = raw.split(", ")
     language = None
-    if '[' in info_list[0]:
+    if "[" in info_list[0]:
         language = info_list.pop(0)
     extension = info_list.pop(0)
     size = info_list.pop(0)
@@ -39,17 +39,17 @@ def extract_publish_info(raw: str) -> tuple[str | None, str | None]:
     #  1, 2008
     #  2008
 
-    if raw.strip() == '':
+    if raw.strip() == "":
         return (None, None)
-    info = [i for i in raw.split(', ') if i.strip()]
+    info = [i for i in raw.split(", ") if i.strip()]
     last_info = info[-1].split()
     date = None
-    if last_info[0].isdecimal() and last_info[0] != '0':
+    if last_info[0].isdecimal() and last_info[0] != "0":
         info.pop()
         date = last_info.pop(0)
         if last_info:
-            date = ' '.join(last_info) + ' of ' + date
+            date = " ".join(last_info) + " of " + date
         elif info and info[-1].isdecimal():
-            date = info.pop() + ', ' + date
-    publisher = ', '.join(info) or None
+            date = info.pop() + ", " + date
+    publisher = ", ".join(info) or None
     return (publisher, date)
