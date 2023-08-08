@@ -1,11 +1,5 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.autopep8"
-    },
-    "python.formatting.provider": "none",
-    "python.analysis.typeCheckingMode": "basic",
-    "cSpell.words": [
-        "aiohttp",
-        "sanic"
-    ]
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }
