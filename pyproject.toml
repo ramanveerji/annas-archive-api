@@ -5,7 +5,6 @@ description = "An unofficial annas-archive.org API"
 authors = []
 license = "MIT"
 readme = "README.md"
-packages = [{include = "annas_archive_api"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
