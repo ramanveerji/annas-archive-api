@@ -1,10 +1,12 @@
-from . import extractors
+import logging
+from dataclasses import asdict
+from http import HTTPStatus
+
 from sanic.request import Request
 from sanic.response import json
-from dataclasses import asdict
-from .utils import cache
-from http import HTTPStatus
-import logging
+
+from . import extractors
+from .caching import cache
 
 
 @cache
@@ -25,7 +27,8 @@ async def home(_):
 async def search(request: Request):
     query = request.args.get("q")
     if not query:
-        return json(body={"error": "missing query"}, status=HTTPStatus.BAD_REQUEST)
+        return json(body={"error": "missing query"},
+                    status=HTTPStatus.BAD_REQUEST)
     language = request.args.get("lang", "")
     extension = request.args.get("ext", "")
     order_by = request.args.get("sort", "")
@@ -50,9 +53,8 @@ async def search(request: Request):
 async def download(request: Request):
     path = request.args.get("path")
     if not path:
-        return json(
-            body={"error": "path parameter is missing"}, status=HTTPStatus.BAD_REQUEST
-        )
+        return json(body={"error": "path parameter is missing"},
+                    status=HTTPStatus.BAD_REQUEST)
     try:
         download_data = await extractors.download.get_download(path)
     except Exception as err:

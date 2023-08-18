@@ -17,8 +17,7 @@ async def get_recommendations() -> list[Recommendation]:
     response = await http_get(FRONT_PAGE)
     soup = BeautifulSoup(response.text, "lxml")
     recommendations = list(
-        map(parse_recommendation, soup.find_all("a", rel="nofollow"))
-    )
+        map(parse_recommendation, soup.find_all("a", rel="nofollow")))
     return [r for r in recommendations if r is not None]
 
 

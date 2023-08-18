@@ -34,7 +34,8 @@ async def get_download(path: str) -> Download:
 
     title = cleanText(soup.find("div", class_="text-3xl font-bold").text)
     authors = cleanText(soup.find("div", class_="italic").text)
-    description = soup.find(name="div", class_="js-md5-top-box-description").text
+    description = soup.find(name="div",
+                            class_="js-md5-top-box-description").text
     thumbnail = soup.find("img").get("src") or None
 
     publish_info = soup.find("div", class_="text-md").text
@@ -42,10 +43,9 @@ async def get_download(path: str) -> Download:
 
     raw_file_info = soup.find("div", class_="text-sm text-gray-500").text
     file_info = extract_file_info(raw_file_info)
-    download_links = list(filter(
-        lambda i: i != None,
-        map(parse_link, soup.find_all("a", class_="js-download-link"))
-    ))
+    download_links = list(
+        filter(lambda i: i != None,
+               map(parse_link, soup.find_all("a", class_="js-download-link"))))
 
     return Download(
         title,

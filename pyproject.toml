@@ -16,6 +16,9 @@ beautifulsoup4 = "^4.12.2"
 aiodns = "^3.0.0"
 
 
+[tool.poetry.group.dev.dependencies]
+yapf = "^0.40.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

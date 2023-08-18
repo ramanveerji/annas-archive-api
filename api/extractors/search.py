@@ -87,8 +87,8 @@ def parse_result(raw_content: Tag) -> Result | None:
     path = raw_content.get("href")
 
     raw_file_info = raw_content.find(
-        "div", class_="truncate text-xs text-gray-500"
-    ).text
+        "div", class_="truncate text-xs text-gray-500").text
     file_info = extract_file_info(raw_file_info)
 
-    return Result(title, authors, publisher, publish_date, thumbnail, path, file_info)
+    return Result(title, authors, publisher, publish_date, thumbnail, path,
+                  file_info)
