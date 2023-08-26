@@ -10,9 +10,9 @@ from .caching import cache
 
 
 @cache
-async def home(_):
+async def recents(_):
     try:
-        recommendations = await extractors.home.get_recommendations()
+        recommendations = await extractors.recents.get_recommendations()
     except Exception as err:
         logging.error("loading recommendations", err)
         return json(
