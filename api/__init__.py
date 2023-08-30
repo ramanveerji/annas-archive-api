@@ -1,1 +1,1 @@
-FRONT_PAGE = 'https://annas-archive.org'
+FRONT_PAGE = "https://annas-archive.org"

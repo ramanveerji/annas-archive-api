@@ -1,20 +1,14 @@
-from dataclasses import dataclass
-
-
-@dataclass(slots=True)
-class FileInfo:
-    language: str | None
-    extension: str
-    size: str
+from ..models.response import FileInfo
 
 
 def extract_file_info(raw: str) -> FileInfo:
     # Extract file info from raw string given from the website
     # it assumes that the string will always have the file format
     # and size, but can have language and file name too
-    # > Case one: Language, format, size and file name is provided;
-    # > Case two: Language, format and size is provided, file name is omitted;
-    # > Case three: Format and size is provided, language and name is omitted.
+    # > Cases:
+    #     Language, format, size and file name is provided;
+    #     Language, format and size is provided, file name is omitted;
+    #     Format and size is provided, language and name is omitted.
 
     # sample data:
     #  English [en], pdf, 7.5MB, "Python_Web_Scraping_-_Second_Edition.pdf"

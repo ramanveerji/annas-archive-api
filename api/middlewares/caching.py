@@ -28,10 +28,7 @@ class Cache:
 class Storage:
     data: dict[str, Cache] = {}
 
-    def add_response(self,
-                     key: str,
-                     response: HTTPResponse,
-                     cache_time: int = TIMEOUT):
+    def add_response(self, key: str, response: HTTPResponse, cache_time: int = TIMEOUT):
         self.data[key] = Cache(response, cache_time)
 
     def get_response(self, key: str) -> Cache:
@@ -64,11 +61,10 @@ def cache(func):
             return storage.get_response(request.url)
         response = await func(request, *args, **kwargs)
         storage.add_response(
-            request.url, response,
-            (TIMEOUT if response.status < 400 else ERROR_TIMEOUT))
+            request.url, response, (TIMEOUT if response.status < 400 else ERROR_TIMEOUT)
+        )
         if first_run:
-            create_task(coro=storage.manager(),
-                        name=f"cacheManager:{func.__name__}")
+            create_task(coro=storage.manager(), name=f"cacheManager:{func.__name__}")
             first_run = False
         return storage.get_response(request.url)
 
