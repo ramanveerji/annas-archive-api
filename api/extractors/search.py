@@ -1,11 +1,11 @@
 import os
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import Tag
 
 from .. import FRONT_PAGE
 from ..models.args import FileType, Language, OrderBy
 from ..models.response import SearchResult
-from ..utils import http_get
+from ..utils import html_parser
 from .generic import extract_file_info, extract_publish_info
 
 
@@ -15,7 +15,7 @@ async def get_search_results(
     file_type: FileType = FileType.ANY,
     order_by: OrderBy = OrderBy.MOST_RELEVANT,
 ) -> list[SearchResult]:
-    response = await http_get(
+    soup = await html_parser(
         url=os.path.join(FRONT_PAGE, "search"),
         params={
             "q": query,
@@ -24,8 +24,6 @@ async def get_search_results(
             "sort": order_by.value,
         },
     )
-    html = response.text.replace("<!--", "").replace("-->", "")
-    soup = BeautifulSoup(html, "lxml")
     raw_results = soup.find_all("a", class_="js-vim-focus")
     results = list(map(parse_result, raw_results))
     return [i for i in results if i is not None]

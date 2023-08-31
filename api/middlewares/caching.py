@@ -5,14 +5,14 @@ from time import time
 from sanic.request import Request
 from sanic.response import HTTPResponse
 
-TIMEOUT = 30 * 60
+DEFAULT_TIMEOUT = 30 * 60
 ERROR_TIMEOUT = 1 * 60
 
 
-@dataclass
+@dataclass(slots=True)
 class Cache:
     response: HTTPResponse
-    cache_time: int = TIMEOUT
+    cache_time: int = DEFAULT_TIMEOUT
     expires_at: float = None
 
     def __post_init__(self):
@@ -27,9 +27,15 @@ class Cache:
 
 class Storage:
     data: dict[str, Cache] = {}
+    manager_running = False
 
-    def add_response(self, key: str, response: HTTPResponse, cache_time: int = TIMEOUT):
+    def __init__(self, name: str):
+        self.name = name
+
+    async def add_response(self, key: str, response: HTTPResponse, cache_time: int):
         self.data[key] = Cache(response, cache_time)
+        if not self.manager_running:
+            create_task(coro=self.manager(), name=f"cacheManager:{self.name}")
 
     def get_response(self, key: str) -> Cache:
         c = self.data[key]
@@ -40,32 +46,27 @@ class Storage:
         return key in self.data
 
     def remove_expired_items(self):
-        expireds = list(filter(lambda i: i[1].is_expired(), self.data.items()))
+        expireds = list(filter(lambda _, i: i.is_expired(), self.data.items()))
         for key, _ in expireds:
             self.data.pop(key)
 
     async def manager(self):
-        first_run = False
+        self.manager_running = True
         while True:
             self.remove_expired_items()
             await sleep(1)
 
 
 def cache(func):
-    storage = Storage()
-    first_run = True
+    storage = Storage(func.__name__)
 
     async def wrapper(request: Request, *args, **kwargs) -> HTTPResponse:
-        nonlocal first_run
-        if storage.exists(request.url):
-            return storage.get_response(request.url)
+        url = request.url
+        if storage.exists(url):
+            return storage.get_response(url)
         response = await func(request, *args, **kwargs)
-        storage.add_response(
-            request.url, response, (TIMEOUT if response.status < 400 else ERROR_TIMEOUT)
-        )
-        if first_run:
-            create_task(coro=storage.manager(), name=f"cacheManager:{func.__name__}")
-            first_run = False
-        return storage.get_response(request.url)
+        timeout = DEFAULT_TIMEOUT if response.status < 400 else ERROR_TIMEOUT
+        await storage.add_response(url, response, timeout)
+        return storage.get_response(url)
 
     return wrapper

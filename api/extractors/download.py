@@ -1,10 +1,10 @@
 import os
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import Tag
 
 from .. import FRONT_PAGE
 from ..models.response import URL, Download
-from ..utils import http_get
+from ..utils import html_parser
 from .generic import extract_file_info, extract_publish_info
 
 
@@ -14,8 +14,7 @@ def remove_search_icon(s: str) -> str:
 
 async def get_download(path: str) -> Download:
     path = path if path[0] != "/" else path[1:]
-    response = await http_get(os.path.join(FRONT_PAGE, path))
-    soup = BeautifulSoup(response.text, "lxml")
+    soup = await html_parser(os.path.join(FRONT_PAGE, path))
 
     title = remove_search_icon(soup.find("div", class_="text-3xl font-bold").text)
     authors = remove_search_icon(soup.find("div", class_="italic").text)

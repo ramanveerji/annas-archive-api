@@ -7,6 +7,16 @@ from sanic.response import HTTPResponse, json
 
 
 def query_checker(queries: List[str]):
+    """
+    Decorator that checks if the required queries are present in the request arguments.
+
+    Args:
+        queries (List[str]): A list of strings representing the required query parameters.
+
+    Returns:
+        function: The decorated function that checks for the presence of the required queries.
+    """
+
     def decorator(func):
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs) -> HTTPResponse:
