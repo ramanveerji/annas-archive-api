@@ -1,1 +1,1 @@
-from . import home, download, search
+from . import download, recents, search
