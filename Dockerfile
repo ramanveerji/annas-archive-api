@@ -5,6 +5,6 @@ RUN adduser --disabled-password --gecos "" anna && \
 USER anna
 WORKDIR /home/anna
 COPY pyproject.toml .
-RUN poetry install --no-root
+RUN poetry install --no-root --without=dev
 COPY . .
 CMD ["poetry", "run", "python", "run.py"]
