@@ -2,42 +2,42 @@ from dataclasses import dataclass
 
 
 @dataclass(slots=True)
-class FileInfo:
-    language: str | None
-    extension: str
-    size: str
-
-
-@dataclass(slots=True)
-class RecentDownload:
-    title: str
-    url: str
-
-
-@dataclass(slots=True)
 class URL:
     title: str
     url: str
 
 
 @dataclass(slots=True)
+class FileInfo:
+    extension: str
+    size: str
+    language: str | None
+
+
+@dataclass(slots=True)
+class RecentDownload:
+    id: str
+    title: str
+
+
+@dataclass(slots=True)
 class SearchResult:
+    id: str
     title: str
     authors: str
+    file_info: FileInfo
+    thumbnail: str | None
     publisher: str | None
     publish_date: str | None
-    thumbnail: str | None
-    path: str
-    file_info: FileInfo
 
 
 @dataclass(slots=True)
 class Download:
     title: str
-    authors: str
     description: str
-    publisher: str | None
-    publish_date: str | None
-    thumbnail: str | None
+    authors: str
     file_info: FileInfo
     urls: list[URL]
+    thumbnail: str | None
+    publisher: str | None
+    publish_date: str | None

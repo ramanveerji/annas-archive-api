@@ -1,4 +1,5 @@
-import os
+from html import unescape as html_unescape
+from os import path
 
 from bs4 import Tag
 
@@ -12,9 +13,8 @@ def remove_search_icon(s: str) -> str:
     return s.replace("🔍", "").strip()
 
 
-async def get_download(path: str) -> Download:
-    path = path if path[0] != "/" else path[1:]
-    soup = await html_parser(os.path.join(FRONT_PAGE, path))
+async def get_download(id: str) -> Download:
+    soup = await html_parser(path.join(FRONT_PAGE, "md5", id))
 
     title = remove_search_icon(soup.find("div", class_="text-3xl font-bold").text)
     authors = remove_search_icon(soup.find("div", class_="italic").text)
@@ -26,22 +26,22 @@ async def get_download(path: str) -> Download:
 
     raw_file_info = soup.find("div", class_="text-sm text-gray-500").text
     file_info = extract_file_info(raw_file_info)
-    download_links = list(
-        filter(
-            lambda i: i is not None,
-            map(parse_link, soup.find_all("a", class_="js-download-link")),
-        )
-    )
+
+    download_links: list[URL] = []
+    for container in soup.find_all("a", class_="js-download-link"):
+        link = parse_link(container)
+        if link is not None:
+            download_links.append(link)
 
     return Download(
-        title,
-        authors,
-        description[1:-1],
-        publisher,
-        publish_date,
-        thumbnail,
-        file_info,
-        download_links,
+        title=html_unescape(title),
+        description=html_unescape(description[1:-1]),
+        authors=html_unescape(authors),
+        file_info=file_info,
+        urls=download_links,
+        thumbnail=thumbnail,
+        publisher=html_unescape(publisher) if publisher else None,
+        publish_date=publish_date,
     )
 
 
@@ -50,5 +50,5 @@ def parse_link(link: Tag) -> URL | None:
     if url == "/datasets":
         return None
     if url[0] == "/":
-        url = os.path.join(FRONT_PAGE, url[1:])
-    return URL(link.text, url)
+        url = path.join(FRONT_PAGE, url[1:])
+    return URL(html_unescape(link.text), url)

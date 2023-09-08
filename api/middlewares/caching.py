@@ -46,7 +46,7 @@ class Storage:
         return key in self.data
 
     def remove_expired_items(self):
-        expireds = list(filter(lambda _, i: i.is_expired(), self.data.items()))
+        expireds = list(filter(lambda i: i[1].is_expired(), self.data.items()))
         for key, _ in expireds:
             self.data.pop(key)
 

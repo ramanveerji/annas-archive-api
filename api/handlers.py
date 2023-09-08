@@ -8,6 +8,7 @@ from sanic.response import json
 from . import extractors
 from .middlewares.caching import cache
 from .middlewares.querycheck import query_checker
+from .models import args
 
 
 @cache
@@ -27,15 +28,24 @@ async def recents(_):
 @query_checker(["q"])
 @cache
 async def search(request: Request, q: str):
-    language = request.args.get("lang", "")
-    extension = request.args.get("ext", "")
-    order_by = request.args.get("sort", "")
+    try:
+        language = args.Language(request.args.get("lang", ""))
+    except ValueError:
+        return json({"error": "invalid language code"}, HTTPStatus.BAD_REQUEST)
+    try:
+        extension = args.FileType(request.args.get("ext", ""))
+    except ValueError:
+        return json({"error": "invalid file extension"}, HTTPStatus.BAD_REQUEST)
+    try:
+        order_by = args.OrderBy(request.args.get("sort", ""))
+    except ValueError:
+        return json({"error": "invalid sort mode"}, HTTPStatus.BAD_REQUEST)
     try:
         result = await extractors.search.get_search_results(
             query=q,
             language=language,
-            file_type=extractors.search.FileType(extension),
-            order_by=extractors.search.OrderBy(order_by),
+            file_type=extension,
+            order_by=order_by,
         )
     except Exception as err:
         logging.error("searching", err)
@@ -47,11 +57,11 @@ async def search(request: Request, q: str):
     return response
 
 
-@query_checker(["path"])
+@query_checker(["id"])
 @cache
-async def download(_, path: str):
+async def download(_, id: str):
     try:
-        download_data = await extractors.download.get_download(path)
+        download_data = await extractors.download.get_download(id)
     except Exception as err:
         logging.error("loading download information", err)
         return json(

@@ -12,7 +12,7 @@ just making a suggestion.
 
 - Description: Get recent downloaded books from others users.
 - Parameters: Don't need.
-- Returns: A list of [RecentDownload](api/models/response.py#L12)
+- Returns: A list of [RecentDownload](api/models/response.py#L18)
 
 **`/search`: Search for contents**
 
@@ -28,7 +28,7 @@ just making a suggestion.
 
 - Description: Get file information like the basic information, book description, and other file information
 - Parameters:
-  - `path`: The URL path to the content(required)
+  - `id`: The book id(required)
 - Returns: [Download](api/models/response.py#L35)
 
 ## Building
