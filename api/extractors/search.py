@@ -1,4 +1,5 @@
-import os
+from html import unescape as html_unescape
+from os import path
 
 from bs4 import Tag
 
@@ -16,17 +17,16 @@ async def get_search_results(
     order_by: OrderBy = OrderBy.MOST_RELEVANT,
 ) -> list[SearchResult]:
     soup = await html_parser(
-        url=os.path.join(FRONT_PAGE, "search"),
+        url=path.join(FRONT_PAGE, "search"),
         params={
             "q": query,
-            "lang": language,
+            "lang": language.value,
             "ext": file_type.value,
             "sort": order_by.value,
         },
     )
     raw_results = soup.find_all("a", class_="js-vim-focus")
-    results = list(map(parse_result, raw_results))
-    return [i for i in results if i is not None]
+    return list(filter(lambda i: i is not None, map(parse_result, raw_results)))
 
 
 def parse_result(raw_content: Tag) -> SearchResult | None:
@@ -40,7 +40,7 @@ def parse_result(raw_content: Tag) -> SearchResult | None:
     publisher, publish_date = extract_publish_info(publish_info)
 
     thumbnail = raw_content.find("img").get("src") or None
-    path = raw_content.get("href")
+    id = raw_content.get("href").split("/md5/")[-1]
 
     raw_file_info = raw_content.find(
         "div", class_="truncate text-xs text-gray-500"
@@ -48,5 +48,11 @@ def parse_result(raw_content: Tag) -> SearchResult | None:
     file_info = extract_file_info(raw_file_info)
 
     return SearchResult(
-        title, authors, publisher, publish_date, thumbnail, path, file_info
+        id=id,
+        title=html_unescape(title),
+        authors=html_unescape(authors),
+        file_info=file_info,
+        thumbnail=thumbnail,
+        publisher=html_unescape(publisher) if publisher else None,
+        publish_date=publish_date,
     )
