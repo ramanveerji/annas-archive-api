@@ -21,8 +21,7 @@ async def recents(_):
             body={"error": "failed to load recent downloads"},
             status=HTTPStatus.INTERNAL_SERVER_ERROR,
         )
-    response = json([asdict(r) for r in recent_downloads])
-    return response
+    return json([asdict(r) for r in recent_downloads])
 
 
 @query_checker(["q"])
@@ -53,8 +52,7 @@ async def search(request: Request, q: str):
             body={"error": "failed to load search results"},
             status=HTTPStatus.INTERNAL_SERVER_ERROR,
         )
-    response = json([asdict(r) for r in result])
-    return response
+    return json([asdict(r) for r in result])
 
 
 @query_checker(["id"])
