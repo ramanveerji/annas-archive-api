@@ -9,9 +9,9 @@ class URL:
 
 @dataclass(slots=True)
 class FileInfo:
+    language: str | None
     extension: str
     size: str
-    language: str | None
 
 
 @dataclass(slots=True)
