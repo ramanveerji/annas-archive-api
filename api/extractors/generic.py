@@ -16,9 +16,7 @@ def extract_file_info(raw: str) -> FileInfo:
     #  mobi, 4.1MB
 
     info_list = raw.split(", ")
-    language = None
-    if "[" in info_list[0]:
-        language = info_list.pop(0)
+    language = info_list.pop(0) if "[" in info_list[0] else None
     extension = info_list.pop(0)
     size = info_list.pop(0)
     return FileInfo(language, extension, size)
@@ -33,7 +31,7 @@ def extract_publish_info(raw: str) -> tuple[str | None, str | None]:
     #  1, 2008
     #  2008
 
-    if raw.strip() == "":
+    if not raw.strip():
         return (None, None)
     info = [i for i in raw.split(", ") if i.strip()]
     last_info = info[-1].split()
@@ -44,6 +42,6 @@ def extract_publish_info(raw: str) -> tuple[str | None, str | None]:
         if last_info:
             date = " ".join(last_info) + " of " + date
         elif info and info[-1].isdecimal():
-            date = info.pop() + ", " + date
+            date = f"{info.pop()}, {date}"
     publisher = ", ".join(info) or None
     return (publisher, date)
