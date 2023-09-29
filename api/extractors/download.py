@@ -1,5 +1,5 @@
 from html import unescape as html_unescape
-from os import path
+from urllib.parse import urljoin
 
 from bs4 import Tag
 
@@ -14,7 +14,7 @@ def remove_search_icon(s: str) -> str:
 
 
 async def get_download(id: str) -> Download:
-    soup = await html_parser(path.join(FRONT_PAGE, "md5", id))
+    soup = await html_parser(urljoin(FRONT_PAGE, f"md5/{id}"))
 
     title = remove_search_icon(soup.find("div", class_="text-3xl font-bold").text)
     authors = remove_search_icon(soup.find("div", class_="italic").text)
@@ -50,5 +50,5 @@ def parse_link(link: Tag) -> URL | None:
     if url == "/datasets":
         return None
     if url[0] == "/":
-        url = path.join(FRONT_PAGE, url[1:])
+        url = urljoin(FRONT_PAGE, url[1:])
     return URL(html_unescape(link.text), url)
