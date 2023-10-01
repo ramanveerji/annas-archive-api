@@ -1,5 +1,5 @@
 from html import unescape as html_unescape
-from os import path
+from urllib.parse import urljoin
 
 from bs4 import Tag
 
@@ -17,7 +17,7 @@ async def get_search_results(
     order_by: OrderBy = OrderBy.MOST_RELEVANT,
 ) -> list[SearchResult]:
     soup = await html_parser(
-        url=path.join(FRONT_PAGE, "search"),
+        url=urljoin(FRONT_PAGE, "search"),
         params={
             "q": query,
             "lang": language.value,
