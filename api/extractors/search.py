@@ -34,16 +34,22 @@ def parse_result(raw_content: Tag) -> SearchResult | None:
         title = raw_content.find("h3").text.strip()
     except:
         return None
-    authors = raw_content.find("div", class_="truncate italic").text
+    authors = raw_content.find(
+        "div",
+        class_="max-lg:line-clamp-[2] lg:truncate leading-[1.2] lg:leading-[1.35] max-lg:text-sm italic",
+    ).text
 
-    publish_info = raw_content.find("div", class_="truncate text-sm").text
+    publish_info = raw_content.find(
+        "div", class_="truncate leading-[1.2] lg:leading-[1.35] max-lg:text-xs"
+    ).text
     publisher, publish_date = extract_publish_info(publish_info)
 
     thumbnail = raw_content.find("img").get("src") or None
     id = raw_content.get("href").split("/md5/")[-1]
 
     raw_file_info = raw_content.find(
-        "div", class_="truncate text-xs text-gray-500"
+        "div",
+        class_="line-clamp-[2] leading-[1.2] text-[10px] lg:text-xs text-gray-500",
     ).text
     file_info = extract_file_info(raw_file_info)
 
