@@ -15,13 +15,11 @@ class HTTPFailed(Exception):
 
 
 async def http_get(url: str, params: dict = {}) -> Response:
-    session = ClientSession()
-    response = await session.get(
-        url, params=dict(filter(lambda i: i[1] not in ("", None), params.items()))
-    )
-    text = await response.text()
-    await session.close()
-    return Response(response.status, text)
+    async with ClientSession() as session:
+        response = await session.get(
+            url, params=dict(filter(lambda i: i[1] not in ("", None), params.items()))
+        )
+        return Response(response.status, await response.text())
 
 
 async def html_parser(url: str, params: dict = {}) -> Tag:
