@@ -47,7 +47,7 @@ cd annas-archive-api
 
 ```bash
 docker build -t annas-api .
-docker run -d --name annas-api -e 1337:8080 annas-api:latest
+docker run -d --name annas-api -p 1337:8080 annas-api:latest
 ```
 
 **On host:**
